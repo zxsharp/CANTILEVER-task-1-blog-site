@@ -1,0 +1,28 @@
+@import "tailwindcss";
+@import "./tw-animate.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+:root.dark {
+  color-scheme: dark;
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Prevent flash of wrong theme */
+html {
+  background-color: rgb(15 23 42); /* slate-900 */
+}
+
+html:not(.dark) {
+  background-color: rgb(248 250 252); /* slate-50 */
+}
