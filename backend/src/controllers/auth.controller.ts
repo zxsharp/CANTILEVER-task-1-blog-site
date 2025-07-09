@@ -25,7 +25,12 @@ export const register: RequestHandler = async (req, res) => {
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' });
 
-        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+        res.cookie('token', token, { 
+            httpOnly: true, 
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            domain: process.env.NODE_ENV === 'production' ? undefined : 'localhost'
+        });
         res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
@@ -56,7 +61,12 @@ export const login: RequestHandler = async (req, res) => {
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' });
 
-        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+        res.cookie('token', token, { 
+            httpOnly: true, 
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            domain: process.env.NODE_ENV === 'production' ? undefined : 'localhost'
+        });
         res.json({ message: 'Login successful' });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
@@ -64,7 +74,13 @@ export const login: RequestHandler = async (req, res) => {
 };
 
 export const logout: RequestHandler = (req, res) => {
-    res.cookie('token', '', { httpOnly: true, expires: new Date(0) });
+    res.cookie('token', '', { 
+        httpOnly: true, 
+        expires: new Date(0),
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        domain: process.env.NODE_ENV === 'production' ? undefined : 'localhost'
+    });
     res.json({ message: 'Logout successful' });
 };
 
