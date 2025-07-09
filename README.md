@@ -46,7 +46,8 @@ task-1/
 │   │   ├── models/         # Database models
 │   │   ├── routes/         # API routes
 │   │   ├── middleware/     # Custom middleware
-│   │   └── ...
+│   │   └── db/             # connection to database
+│   │   └── schemas/        # zod schemas for validation
 │   └── ...
 └── README.md
 ```
