@@ -9,6 +9,7 @@ import { BlogCard } from '../components/BlogCard'
 import { Alert } from '../components/Alert'
 import { EmptyState } from '../components/EmptyState'
 import { LoadingSpinner } from '../components/LoadingSpinner'
+import { API_ENDPOINTS } from '../config/api'
 
 interface Bookmark {
     _id: string
@@ -40,23 +41,11 @@ export default function Bookmarks() {
         setIsMenuOpen(false)
     }
 
-    // Check authentication status
-    const checkAuthStatus = useCallback(async () => {
-        try {
-            await axios.get(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
-                withCredentials: true,
-            })
-            // Authentication status is managed by AuthProvider
-        } catch (err) {
-            navigate('/login')
-        }
-    }, [navigate])
-
     // Fetch bookmarks
     const fetchBookmarks = useCallback(async () => {
         try {
             setIsLoading(true)
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/bookmarks`, {
+            const response = await axios.get(API_ENDPOINTS.BOOKMARKS.BASE, {
                 withCredentials: true,
             })
 
@@ -84,14 +73,12 @@ export default function Bookmarks() {
     }, [navigate])
 
     useEffect(() => {
-        checkAuthStatus()
-    }, [checkAuthStatus])
-
-    useEffect(() => {
         if (isAuthenticated) {
             fetchBookmarks()
+        } else {
+            navigate('/login')
         }
-    }, [fetchBookmarks, isAuthenticated])
+    }, [isAuthenticated, fetchBookmarks, navigate])
 
     // Add a refresh function that can be called when returning to this page
     useEffect(() => {

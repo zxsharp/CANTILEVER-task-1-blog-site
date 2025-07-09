@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react'
 import axios from 'axios'
+import { API_ENDPOINTS } from '../config/api'
 
 interface User {
   id: string
@@ -40,11 +41,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const logout = useCallback(async () => {
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {}, {
+      await axios.post(API_ENDPOINTS.AUTH.LOGOUT, {}, {
         withCredentials: true,
       })
     } catch (error) {
-      // Even if logout fails on server, clear local state
       console.error('Logout error:', error)
     } finally {
       setUser(null)
@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const checkAuth = useCallback(async () => {
     try {
       setIsLoading(true)
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
+      const response = await axios.get(API_ENDPOINTS.AUTH.ME, {
         withCredentials: true,
       })
       setUser(response.data)

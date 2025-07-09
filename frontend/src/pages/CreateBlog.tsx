@@ -3,6 +3,7 @@ import { useNavigate} from 'react-router-dom'
 import { BookOpen, PenTool, Type, Moon, Sun, ArrowLeft } from 'lucide-react'
 import axios from 'axios'
 import { Navigation } from '../components/Navigation'
+import { API_ENDPOINTS } from '../config/api'
 
 export default function CreateBlog() {
     const navigate = useNavigate()
@@ -48,8 +49,7 @@ export default function CreateBlog() {
         setSuccess('')
 
         try {
-            
-            await axios.post(`${import.meta.env.VITE_API_URL}/api/blogs`, formData, {
+            await axios.post(API_ENDPOINTS.BLOGS.BASE, formData, {
                 withCredentials: true,
             })
 

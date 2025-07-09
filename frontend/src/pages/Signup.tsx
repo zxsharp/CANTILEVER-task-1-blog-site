@@ -6,6 +6,7 @@ import { useTheme } from '../components/ThemeProvider'
 import { Navigation } from '../components/Navigation'
 import { FormInput } from '../components/FormInput'
 import { Alert } from '../components/Alert'
+import { API_ENDPOINTS } from '../config/api'
 
 export default function Signup() {
     const navigate = useNavigate()
@@ -27,7 +28,7 @@ export default function Signup() {
         setSuccess('')
 
         try {
-            await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, formData, {
+            await axios.post(API_ENDPOINTS.AUTH.REGISTER, formData, {
                 withCredentials: true,
             })
 

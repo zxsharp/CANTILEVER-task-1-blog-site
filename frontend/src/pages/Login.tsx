@@ -7,6 +7,7 @@ import { useAuth } from '../components/AuthProvider'
 import { Navigation } from '../components/Navigation'
 import { FormInput } from '../components/FormInput'
 import { Alert } from '../components/Alert'
+import { API_ENDPOINTS } from '../config/api'
 
 export default function Login() {
     const navigate = useNavigate()
@@ -28,12 +29,12 @@ export default function Login() {
         setSuccess('')
 
         try {
-            await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, formData, {
+            await axios.post(API_ENDPOINTS.AUTH.LOGIN, formData, {
                 withCredentials: true,
             })
 
             // Get user data after successful login
-            const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
+            const userResponse = await axios.get(API_ENDPOINTS.AUTH.ME, {
                 withCredentials: true,
             })
 

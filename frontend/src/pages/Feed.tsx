@@ -9,6 +9,7 @@ import { BlogCard } from '../components/BlogCard'
 import { Alert } from '../components/Alert'
 import { EmptyState } from '../components/EmptyState'
 import { LoadingSpinner } from '../components/LoadingSpinner'
+import { API_ENDPOINTS } from '../config/api'
 
 interface Blog {
     _id: string
@@ -40,7 +41,7 @@ export default function Feed() {
     const fetchBlogs = useCallback(async () => {
         try {
             setIsLoading(true)
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/blogs`, {
+            const response = await axios.get(API_ENDPOINTS.BLOGS.BASE, {
                 withCredentials: true,
             })
 

@@ -2,8 +2,10 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { BookOpen, User, Calendar, Moon, Sun, ArrowLeft, Edit, Trash2, Save, X, Bookmark, BookmarkCheck } from 'lucide-react'
 import axios from 'axios'
+import { useTheme } from '../components/ThemeProvider'
 import { Navigation } from '../components/Navigation'
 import { LoadingSpinner } from '../components/LoadingSpinner'
+import { API_ENDPOINTS } from '../config/api'
 
 interface Blog {
     _id: string
@@ -25,7 +27,7 @@ interface CurrentUser {
 export default function BlogDetail() {
     const navigate = useNavigate()
     const { id } = useParams<{ id: string }>()
-    const [isDarkMode] = useState(true)
+    const { isDarkMode, themeClasses } = useTheme()
     const [blog, setBlog] = useState<Blog | null>(null)
     const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -39,22 +41,6 @@ export default function BlogDetail() {
     })
     const [isBookmarked, setIsBookmarked] = useState(false)
     const [isBookmarking, setIsBookmarking] = useState(false)
-
-    // Memoize theme classes
-    const themeClasses = useMemo(() => ({
-        container: isDarkMode ? 'dark bg-gradient-to-br from-gray-900 to-gray-800' : 'bg-gradient-to-br from-slate-50 to-sky-50',
-        nav: isDarkMode ? 'bg-gray-900/80 border-gray-700' : 'bg-white/80 border-gray-200',
-        card: isDarkMode ? 'bg-gray-900 border-gray-700' : 'bg-white border-gray-200',
-        text: {
-            primary: isDarkMode ? 'text-white' : 'text-gray-900',
-            secondary: isDarkMode ? 'text-gray-300' : 'text-gray-600',
-            muted: isDarkMode ? 'text-gray-400' : 'text-gray-500',
-        },
-        button: isDarkMode ? 'text-gray-300 hover:text-white hover:bg-gray-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100',
-        link: isDarkMode ? 'hover:text-sky-400' : 'hover:text-sky-700',
-        input: isDarkMode ? 'border-gray-700 bg-gray-900 text-white' : 'border-gray-200 bg-white text-gray-900',
-        textarea: isDarkMode ? 'border-gray-700 bg-gray-900 text-white' : 'border-gray-200 bg-white text-gray-900',
-    }), [isDarkMode])
 
     // Memoize icons
     const icons = useMemo(() => ({
@@ -75,12 +61,11 @@ export default function BlogDetail() {
     // Fetch current user
     const fetchCurrentUser = useCallback(async () => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
+            const response = await axios.get(API_ENDPOINTS.AUTH.ME, {
                 withCredentials: true,
             })
             setCurrentUser(response.data)
         } catch (err) {
-            // User not logged in or error occurred
             setCurrentUser(null)
         }
     }, [])
@@ -91,7 +76,7 @@ export default function BlogDetail() {
 
         try {
             setIsLoading(true)
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/blogs/${id}`, {
+            const response = await axios.get(API_ENDPOINTS.BLOGS.BY_ID(id), {
                 withCredentials: true,
             })
 
@@ -107,76 +92,13 @@ export default function BlogDetail() {
         }
     }, [id])
 
-    // Check if blog is bookmarked
-    const checkBookmarkStatus = useCallback(async () => {
-        if (!id || !currentUser) return
-
-        try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/bookmarks`, {
-                withCredentials: true,
-            })
-            const bookmarkedBlogs = response.data
-            setIsBookmarked(bookmarkedBlogs.some((bookmark: any) => bookmark.blog._id === id))
-        } catch (err) {
-            // User might not be logged in
-        }
-    }, [id, currentUser])
-
-    // Handle bookmark toggle
-    const handleBookmarkToggle = useCallback(async () => {
-        if (!id || !currentUser) return
-
-        try {
-            setIsBookmarking(true)
-            if (isBookmarked) {
-                await axios.delete(`${import.meta.env.VITE_API_URL}/api/bookmarks/${id}`, {
-                    withCredentials: true,
-                })
-                setIsBookmarked(false)
-                
-                // If we're on a bookmarked blog and removing bookmark, 
-                // we might want to redirect back to bookmarks page
-                const currentPath = window.location.pathname
-                if (currentPath.includes('/blog/') && document.referrer.includes('/bookmarks')) {
-                    // Add a small delay to show the change, then redirect
-                    setTimeout(() => {
-                        navigate('/bookmarks')
-                    }, 1000)
-                }
-            } else {
-                await axios.post(`${import.meta.env.VITE_API_URL}/api/bookmarks/${id}`, {}, {
-                    withCredentials: true,
-                })
-                setIsBookmarked(true)
-            }
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to toggle bookmark')
-        } finally {
-            setIsBookmarking(false)
-        }
-    }, [id, currentUser, isBookmarked, navigate])
-
-    useEffect(() => {
-        fetchCurrentUser()
-        fetchBlog()
-    }, [fetchCurrentUser, fetchBlog])
-
-    useEffect(() => {
-        checkBookmarkStatus()
-    }, [checkBookmarkStatus])
-
-    // Check if current user is the author
-    const isAuthor = useMemo(() => {
-        return currentUser && blog && currentUser.id === blog.author._id
-    }, [currentUser, blog])
-
     // Handle update
     const handleUpdate = useCallback(async () => {
         if (!blog || !id) return
 
         try {
             setIsUpdating(true)
-            const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/blogs/${id}`, editForm, {
+            const response = await axios.put(API_ENDPOINTS.BLOGS.BY_ID(id), editForm, {
                 withCredentials: true,
             })
 
@@ -199,7 +121,7 @@ export default function BlogDetail() {
 
         try {
             setIsDeleting(true)
-            await axios.delete(`${import.meta.env.VITE_API_URL}/api/blogs/${id}`, {
+            await axios.delete(API_ENDPOINTS.BLOGS.BY_ID(id), {
                 withCredentials: true,
             })
 
@@ -210,6 +132,46 @@ export default function BlogDetail() {
         }
     }, [blog, id, navigate])
 
+    // Handle bookmark toggle
+    const handleBookmarkToggle = useCallback(async () => {
+        if (!id || !currentUser) return
+
+        try {
+            setIsBookmarking(true)
+            if (isBookmarked) {
+                await axios.delete(API_ENDPOINTS.BOOKMARKS.BY_ID(id), {
+                    withCredentials: true,
+                })
+                setIsBookmarked(false)
+            } else {
+                await axios.post(API_ENDPOINTS.BOOKMARKS.BY_ID(id), {}, {
+                    withCredentials: true,
+                })
+                setIsBookmarked(true)
+            }
+        } catch (err: any) {
+            setError(err.response?.data?.message || 'Failed to toggle bookmark')
+        } finally {
+            setIsBookmarking(false)
+        }
+    }, [id, currentUser, isBookmarked])
+
+    // Check if blog is bookmarked
+    const checkBookmarkStatus = useCallback(async () => {
+        if (!id || !currentUser) return
+
+        try {
+            const response = await axios.get(API_ENDPOINTS.BOOKMARKS.BASE, {
+                withCredentials: true,
+            })
+            const bookmarkedBlogs = response.data
+            setIsBookmarked(bookmarkedBlogs.some((bookmark: any) => bookmark.blog._id === id))
+        } catch (err) {
+            // User might not be logged in
+        }
+    }, [id, currentUser])
+
+    // Add missing formatDate function
     const formatDate = useCallback((dateString: string) => {
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
@@ -220,12 +182,27 @@ export default function BlogDetail() {
         })
     }, [])
 
+    // Add missing handleEditChange function
     const handleEditChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setEditForm(prev => ({
             ...prev,
             [e.target.name]: e.target.value
         }))
     }, [])
+
+    useEffect(() => {
+        fetchCurrentUser()
+        fetchBlog()
+    }, [fetchCurrentUser, fetchBlog])
+
+    useEffect(() => {
+        checkBookmarkStatus()
+    }, [checkBookmarkStatus])
+
+    // Check if current user is the author
+    const isAuthor = useMemo(() => {
+        return currentUser && blog && currentUser.id === blog.author._id
+    }, [currentUser, blog])
 
     // Memoize navigation elements
     const backLink = useMemo(() => (
@@ -418,4 +395,3 @@ export default function BlogDetail() {
         </div>
     )
 }
-                                
