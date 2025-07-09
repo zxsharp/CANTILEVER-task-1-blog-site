@@ -28,7 +28,7 @@ export default function Login() {
         setSuccess('')
 
         try {
-            await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, formData, {
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, formData, {
                 withCredentials: true,
             })
 
