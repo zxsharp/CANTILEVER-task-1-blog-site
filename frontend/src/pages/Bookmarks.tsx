@@ -43,7 +43,7 @@ export default function Bookmarks() {
     // Check authentication status
     const checkAuthStatus = useCallback(async () => {
         try {
-            await axios.get('http://localhost:5000/api/auth/me', {
+            await axios.get(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
                 withCredentials: true,
             })
             // Authentication status is managed by AuthProvider
@@ -56,7 +56,7 @@ export default function Bookmarks() {
     const fetchBookmarks = useCallback(async () => {
         try {
             setIsLoading(true)
-            const response = await axios.get('http://localhost:5000/api/bookmarks', {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/bookmarks`, {
                 withCredentials: true,
             })
 

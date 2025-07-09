@@ -40,7 +40,7 @@ export default function Feed() {
     const fetchBlogs = useCallback(async () => {
         try {
             setIsLoading(true)
-            const response = await axios.get('http://localhost:5000/api/blogs', {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/blogs`, {
                 withCredentials: true,
             })
 

@@ -49,7 +49,7 @@ export default function CreateBlog() {
 
         try {
             
-            await axios.post('http://localhost:5000/api/blogs', formData, {
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/blogs`, formData, {
                 withCredentials: true,
             })
 

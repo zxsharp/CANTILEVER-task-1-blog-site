@@ -28,12 +28,12 @@ export default function Login() {
         setSuccess('')
 
         try {
-            await axios.post('http://localhost:5000/api/auth/login', formData, {
+            await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, formData, {
                 withCredentials: true,
             })
 
             // Get user data after successful login
-            const userResponse = await axios.get('http://localhost:5000/api/auth/me', {
+            const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
                 withCredentials: true,
             })
 

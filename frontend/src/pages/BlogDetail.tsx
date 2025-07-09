@@ -75,7 +75,7 @@ export default function BlogDetail() {
     // Fetch current user
     const fetchCurrentUser = useCallback(async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/auth/me', {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
                 withCredentials: true,
             })
             setCurrentUser(response.data)
@@ -91,7 +91,7 @@ export default function BlogDetail() {
 
         try {
             setIsLoading(true)
-            const response = await axios.get(`http://localhost:5000/api/blogs/${id}`, {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/blogs/${id}`, {
                 withCredentials: true,
             })
 
@@ -112,7 +112,7 @@ export default function BlogDetail() {
         if (!id || !currentUser) return
 
         try {
-            const response = await axios.get('http://localhost:5000/api/bookmarks', {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/bookmarks`, {
                 withCredentials: true,
             })
             const bookmarkedBlogs = response.data
@@ -129,7 +129,7 @@ export default function BlogDetail() {
         try {
             setIsBookmarking(true)
             if (isBookmarked) {
-                await axios.delete(`http://localhost:5000/api/bookmarks/${id}`, {
+                await axios.delete(`${import.meta.env.VITE_API_URL}/api/bookmarks/${id}`, {
                     withCredentials: true,
                 })
                 setIsBookmarked(false)
@@ -144,7 +144,7 @@ export default function BlogDetail() {
                     }, 1000)
                 }
             } else {
-                await axios.post(`http://localhost:5000/api/bookmarks/${id}`, {}, {
+                await axios.post(`${import.meta.env.VITE_API_URL}/api/bookmarks/${id}`, {}, {
                     withCredentials: true,
                 })
                 setIsBookmarked(true)
@@ -176,7 +176,7 @@ export default function BlogDetail() {
 
         try {
             setIsUpdating(true)
-            const response = await axios.put(`http://localhost:5000/api/blogs/${id}`, editForm, {
+            const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/blogs/${id}`, editForm, {
                 withCredentials: true,
             })
 
@@ -199,7 +199,7 @@ export default function BlogDetail() {
 
         try {
             setIsDeleting(true)
-            await axios.delete(`http://localhost:5000/api/blogs/${id}`, {
+            await axios.delete(`${import.meta.env.VITE_API_URL}/api/blogs/${id}`, {
                 withCredentials: true,
             })
 
